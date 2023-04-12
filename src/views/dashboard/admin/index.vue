@@ -1,53 +1,106 @@
 <script setup lang="ts">
 import "../../../config/ace.config"
-import { ref } from "vue"
-import { VAceEditor } from "vue3-ace-editor"
+import {ref} from "vue"
+import {VAceEditor} from "vue3-ace-editor"
+import { Delete, Edit, Search, Share, Upload } from '@element-plus/icons-vue'
 
 const content = ref("public static void main(String[] args){\n\n}")
-const inputEl = ref(null)
 const lang = ref("java")
 const options = ref([
-  { value: "java", label: "Java" },
-  { value: "golang", label: "golang" }
+  {value: "java", label: "Java"},
+  {value: "golang", label: "golang"}
 ])
+const size = ref([1])
+function addTabs() {
+  size.value.push(size.value.length + 1)
+  console.log(size.value)
+}
 </script>
 
 <template>
-  <el-select v-model="lang" class="m-2 lang-select" placeholder="Select">
-    <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
-  </el-select>
-  <v-ace-editor v-model:value="content" v-model:lang="lang" theme="github" style="font-size: 20px; height: 300px" />
 
+  <el-row v-for="it in size" :id="it">
+    <el-col :span="12">
+      <el-row>
+        <el-col :span="18">
+          <el-select v-model="lang" class="m-2 lang-select" placeholder="Select">
+            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"/>
+          </el-select>
+        </el-col>
+        <el-col :span="6">
+          <el-button type="info" plain style="float: right">
+            运行<el-icon><CaretRight /></el-icon>
+          </el-button>
+        </el-col>
+
+      </el-row>
+
+
+      <v-ace-editor
+        class="input"
+        v-model:value="content"
+        v-model:lang="lang"
+        theme="github"
+        style=""
+        :options="{
+        enableBasicAutocompletion: true,
+        enableSnippets: true,
+        enableLiveAutocompletion: true,
+        fontSize: 14,
+        tabSize: 4,
+        showPrintMargin: false,
+        highlightActiveLine: true
+      }"
+      />
+
+    </el-col>
+    <el-col :span="12">
+      <el-button type="info" plain :icon="Delete">
+        清空
+      </el-button>
+      <el-button type="warning" plain style="float: right" @click="addTabs">
+        <el-icon><Close /></el-icon>
+      </el-button>
+      <div class="output">
+
+      </div>
+
+    </el-col>
+
+  </el-row>
   <div>
-    <highlightjs language="javascript" code="var x = 5;" />
-    <el-input
-      v-model="inputEl"
-      ref="input"
-      type="textarea"
-      :autosize="{ minRows: 2, maxRows: 6}"
-      placeholder="请输入内容"
-    ></el-input>
-    <pre v-highlightjs><code class="javascript">const s = new Date().toString()</code></pre>
-    <pre v-highlightjs><code class="javascript">var a = 5;</code></pre>
-    <pre v-highlightjs>Integer a = 20;</pre>
-    <pre v-highlightjs><code class="java" contenteditable="true">{{inputEl}}</code></pre>
 
-    <pre v-highlightjs><code class="javascript" contenteditable="true">
-      <textarea  v-model="inputEl"></textarea>
-    </code></pre>
-    public class DubDeclareBillForNbAndShServiceImpl implements DubDeclareBillForNbAndShService {}
   </div>
-
-
 </template>
 
 <style lang="scss" scoped>
-.lang-select{
+.start {
+  background-color: #67c23a;
+  border-radius: 12px;
+}
+.output {
+  font-size: 20px;
+  width: 100%;
+  height: 300px;
+  overflow-y: auto;
+  background-color: #031e47;
+  display: inline-block;
+}
+
+.input {
+  display: inline-block;
+  font-size: 20px;
+  width: 100%;
+  height: 300px;
+}
+
+.lang-select {
   left: 40px;
   padding: 0;
-  border-radius: 0px;
+  border-radius: 0;
   margin: 0;
 }
+
 .center {
   height: 100%;
   display: flex;
