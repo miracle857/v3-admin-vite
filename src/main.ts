@@ -3,6 +3,9 @@ import { createApp } from "vue"
 import App from "@/App.vue"
 import store from "@/store"
 import router from "@/router"
+
+import hljsVuePlugin from "@highlightjs/vue-plugin"
+
 import "@/router/permission"
 // load
 import { loadSvg } from "@/icons"
@@ -16,6 +19,8 @@ import "element-plus/theme-chalk/dark/css-vars.css"
 import "vxe-table/lib/style.css"
 import "vxe-table-plugin-element/dist/style.css"
 import "@/styles/index.scss"
+import "highlight.js/styles/atom-one-dark.css"
+import "highlight.js/lib/common"
 
 const app = createApp(App)
 
@@ -26,4 +31,4 @@ loadSvg(app)
 /** 加载自定义指令 */
 loadDirectives(app)
 
-app.use(store).use(router).mount("#app")
+app.use(store).use(router).use(hljsVuePlugin).mount("#app")

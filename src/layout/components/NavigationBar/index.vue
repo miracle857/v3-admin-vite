@@ -8,7 +8,7 @@ import { UserFilled } from "@element-plus/icons-vue"
 import Breadcrumb from "../Breadcrumb/index.vue"
 import Hamburger from "../Hamburger/index.vue"
 import ThemeSwitch from "@/components/ThemeSwitch/index.vue"
-import Screenfull from "@/components/Screenfull/index.vue"
+// import Screenfull from "@/components/Screenfull/index.vue"
 import Notify from "@/components/Notify/index.vue"
 
 const router = useRouter()
@@ -25,9 +25,9 @@ const showNotify = computed(() => {
 const showThemeSwitch = computed(() => {
   return settingsStore.showThemeSwitch
 })
-const showScreenfull = computed(() => {
-  return settingsStore.showScreenfull
-})
+// const showScreenfull = computed(() => {
+//   return settingsStore.showScreenfull
+// })
 
 const toggleSidebar = () => {
   appStore.toggleSidebar(false)
@@ -43,7 +43,7 @@ const logout = () => {
     <Hamburger :is-active="sidebar.opened" class="hamburger" @toggle-click="toggleSidebar" />
     <Breadcrumb class="breadcrumb" />
     <div class="right-menu">
-      <Screenfull v-if="showScreenfull" class="right-menu-item" />
+<!--      <Screenfull v-if="showScreenfull" class="right-menu-item" />-->
       <ThemeSwitch v-if="showThemeSwitch" class="right-menu-item" />
       <Notify v-if="showNotify" class="right-menu-item" />
       <el-dropdown class="right-menu-item">
