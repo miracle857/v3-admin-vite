@@ -1,34 +1,24 @@
-<script>
-import { ref, nextTick } from "vue"
-import hljs from "highlight.js"
-import { VAceEditor } from "vue3-ace-editor";
+<script setup lang="ts">
+import "../../../config/ace.config"
+import { ref } from "vue"
+import { VAceEditor } from "vue3-ace-editor"
 
-export default {
-  setup() {
-    const inputEl = ref(null)
-    const content = ref(null)
-
-
-    return {
-      inputEl,
-      content,
-      components: {
-        VAceEditor
-      }
-    }
-  }
-}
+const content = ref("public static void main(String[] args){\n\n}")
+const inputEl = ref(null)
+const lang = ref("java")
+const options = ref([
+  { value: "java", label: "Java" },
+  { value: "golang", label: "golang" }
+])
 </script>
 
 <template>
-  <div>
-    <v-ace-editor
-      v-model:value="content"
-      @init="editorInit"
-      lang="html"
-      theme="chrome"
-      style="height: 300px" />
+  <el-select v-model="lang" class="m-2 lang-select" placeholder="Select">
+    <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+  </el-select>
+  <v-ace-editor v-model:value="content" v-model:lang="lang" theme="github" style="font-size: 20px; height: 300px" />
 
+  <div>
     <highlightjs language="javascript" code="var x = 5;" />
     <el-input
       v-model="inputEl"
@@ -52,6 +42,12 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+.lang-select{
+  left: 40px;
+  padding: 0;
+  border-radius: 0px;
+  margin: 0;
+}
 .center {
   height: 100%;
   display: flex;
