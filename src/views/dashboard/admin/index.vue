@@ -1,25 +1,36 @@
 <script setup lang="ts">
 import "../../../config/ace.config"
-import {ref} from "vue"
+import {reactive, ref} from "vue"
 import {VAceEditor} from "vue3-ace-editor"
 import { Delete, Edit, Search, Share, Upload } from '@element-plus/icons-vue'
+import { sendEventStream } from "@/utils/service"
 
-const content = ref("public static void main(String[] args){\n\n}")
+
+interface Code {
+  id: number
+  code: string
+}
+
+const codeTabs = reactive<Code[]>([{ id: 1, code: "public static void main(String[] args){\n\n}" }])
+
 const lang = ref("java")
 const options = ref([
   {value: "java", label: "Java"},
   {value: "golang", label: "golang"}
 ])
-const size = ref([1])
 function addTabs() {
-  size.value.push(size.value.length + 1)
-  console.log(size.value)
+  codeTabs.push({ id: codeTabs.length + 1, code: "public static void main(String[] args){\n\n}" })
+}
+
+function runCode(id: number, code: string) {
+  console.log("runCode id=" + id)
+  console.log("runCode code=" + code)
+  // sendEventStream("http://localhost:3434/sse2/connect/T")
 }
 </script>
 
 <template>
-
-  <el-row v-for="it in size" :id="it">
+  <el-row v-for="it in codeTabs" :id="it.id">
     <el-col :span="12">
       <el-row>
         <el-col :span="18">
@@ -28,7 +39,7 @@ function addTabs() {
           </el-select>
         </el-col>
         <el-col :span="6">
-          <el-button type="info" plain style="float: right">
+          <el-button type="info" plain style="float: right" @click="runCode(it.id, it.code)">
             运行<el-icon><CaretRight /></el-icon>
           </el-button>
         </el-col>
@@ -38,18 +49,18 @@ function addTabs() {
 
       <v-ace-editor
         class="input"
-        v-model:value="content"
+        v-model:value="it.code"
         v-model:lang="lang"
         theme="github"
         style=""
         :options="{
-        enableBasicAutocompletion: true,
-        enableSnippets: true,
-        enableLiveAutocompletion: true,
-        fontSize: 14,
-        tabSize: 4,
-        showPrintMargin: false,
-        highlightActiveLine: true
+          enableBasicAutocompletion: true,
+          enableSnippets: true,
+          enableLiveAutocompletion: true,
+          fontSize: 14,
+          tabSize: 4,
+          showPrintMargin: false,
+          highlightActiveLine: true
       }"
       />
 
@@ -69,7 +80,6 @@ function addTabs() {
 
   </el-row>
   <div>
-
   </div>
 </template>
 

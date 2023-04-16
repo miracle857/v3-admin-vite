@@ -4,6 +4,67 @@ import { ElMessage } from "element-plus"
 import { get } from "lodash-es"
 import { getToken } from "./cache/cookies"
 
+export function test() {
+  const url = "http://localhost:3434/sse2/connect/T"
+  axios
+    .get(url, { responseType: "text", headers: { Accept: "text/event-stream" } })
+    .then(() => {
+      const eventSource = new EventSource(url)
+      eventSource.onmessage = (event) => {
+        console.log(event.data)
+        console.log("Received event: " + JSON.stringify(event))
+      }
+
+      eventSource.onerror = (error) => {
+        console.error("EventSource error:", error)
+        eventSource.close()
+      }
+    })
+    .catch((error) => {
+      console.error("Error fetching SSE stream:", error)
+    })
+}
+
+export function sendEventStream(url: string) {
+  // const url = "http://localhost:3434/sse2/connect/T"
+  // 建立连接
+  const source = new EventSource(url)
+
+  /**
+   * 连接一旦建立，就会触发open事件
+   * 另一种写法：source.onopen = function (event) {}
+   */
+  source.addEventListener(
+    "open",
+    function () {
+      console.log("open....")
+    },
+    false
+  )
+
+  /**
+   * 客户端收到服务器发来的数据
+   * 另一种写法：source.onmessage = function (event) {}
+   */
+  source.addEventListener("message", function (e) {
+    console.log("message...." + e.data)
+  })
+
+  /**
+   * 如果发生通信错误（比如连接中断），就会触发error事件
+   * 或者：
+   * 另一种写法：source.onerror = function (event) {}
+   */
+  source.addEventListener(
+    "error",
+    function () {
+      console.log("error....")
+      source.close()
+    },
+    false
+  )
+}
+
 /** 创建请求实例 */
 function createService() {
   // 创建一个 Axios 实例
