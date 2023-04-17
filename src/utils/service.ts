@@ -25,6 +25,14 @@ export function test() {
     })
 }
 
+export function connectAndRun(id: number, code: string) {
+  const data = { id: id, code: code }
+  // sendEventStream("http://localhost:3434/sse2/connect/" + id)
+  axios.post("http://localhost:3434/sse2/run", data).then((res) => {
+    console.log(res)
+  })
+}
+
 export function sendEventStream(url: string) {
   // const url = "http://localhost:3434/sse2/connect/T"
   // 建立连接

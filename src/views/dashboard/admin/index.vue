@@ -3,15 +3,26 @@ import "../../../config/ace.config"
 import {reactive, ref} from "vue"
 import {VAceEditor} from "vue3-ace-editor"
 import { Delete, Edit, Search, Share, Upload } from '@element-plus/icons-vue'
-import { sendEventStream } from "@/utils/service"
+import {connectAndRun, sendEventStream} from "@/utils/service"
 
 
 interface Code {
   id: number
   code: string
+  out?: string
 }
 
-const codeTabs = reactive<Code[]>([{ id: 1, code: "public static void main(String[] args){\n\n}" }])
+// const templateCode = "public static void main(String[] args){\n\n}"
+const templateCode = `import com.maoxinhuan.webtools.utils.LogUtils;
+
+public class Test22 {
+  public static void main(String[] args) throws Exception{
+    LogUtils.log("1");
+  }
+}
+`
+
+const codeTabs = reactive<Code[]>([{ id: 1, code: templateCode }])
 
 const lang = ref("java")
 const options = ref([
@@ -19,13 +30,47 @@ const options = ref([
   {value: "golang", label: "golang"}
 ])
 function addTabs() {
-  codeTabs.push({ id: codeTabs.length + 1, code: "public static void main(String[] args){\n\n}" })
+  codeTabs.push({ id: codeTabs.length + 1, code: templateCode })
 }
 
-function runCode(id: number, code: string) {
-  console.log("runCode id=" + id)
-  console.log("runCode code=" + code)
-  // sendEventStream("http://localhost:3434/sse2/connect/T")
+function runCode(obj: Code) {
+  obj.out = ""
+  const source = new EventSource("http://localhost:3434/sse2/connect/" + obj.id)
+
+  /**
+   * 连接一旦建立，就会触发open事件
+   * 另一种写法：source.onopen = function (event) {}
+   */
+  source.addEventListener(
+    "open",
+    function () {
+      console.log("open....")
+    },
+    false
+  )
+
+  /**
+   * 客户端收到服务器发来的数据
+   * 另一种写法：source.onmessage = function (event) {}
+   */
+  source.addEventListener("message", function (e) {
+    console.log("message...." + e.data)
+    obj.out += e.data + "<br>"
+  })
+
+  /**
+   * 如果发生通信错误（比如连接中断），就会触发error事件
+   * 或者：
+   * 另一种写法：source.onerror = function (event) {}
+   */
+  source.addEventListener(
+    "error",
+    function () {
+      console.log("error....")
+    },
+    false
+  )
+  connectAndRun(obj.id, obj.code)
 }
 </script>
 
@@ -39,7 +84,7 @@ function runCode(id: number, code: string) {
           </el-select>
         </el-col>
         <el-col :span="6">
-          <el-button type="info" plain style="float: right" @click="runCode(it.id, it.code)">
+          <el-button type="info" plain style="float: right" @click="runCode(it)">
             运行<el-icon><CaretRight /></el-icon>
           </el-button>
         </el-col>
@@ -73,7 +118,7 @@ function runCode(id: number, code: string) {
         <el-icon><Close /></el-icon>
       </el-button>
       <div class="output">
-
+        <span v-html="it.out"></span>
       </div>
 
     </el-col>
@@ -89,11 +134,13 @@ function runCode(id: number, code: string) {
   border-radius: 12px;
 }
 .output {
+  margin-left: 1px;
   font-size: 20px;
   width: 100%;
   height: 300px;
   overflow-y: auto;
-  background-color: #031e47;
+  border: #000000 solid 1px;
+  background-color: #ffffff;
   display: inline-block;
 }
 
