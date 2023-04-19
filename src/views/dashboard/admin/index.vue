@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import "../../../config/ace.config"
-import {reactive, ref} from "vue"
-import {VAceEditor} from "vue3-ace-editor"
-import { Delete, Edit, Search, Share, Upload } from '@element-plus/icons-vue'
-import {connectAndRun, sendEventStream} from "@/utils/service"
-
+import { reactive, ref } from "vue"
+import { VAceEditor } from "vue3-ace-editor"
+import { Delete } from "@element-plus/icons-vue"
+import { connectAndRun } from "@/utils/service"
 
 interface Code {
   id: number
@@ -17,7 +16,7 @@ const templateCode = `import com.maoxinhuan.webtools.utils.LogUtils;
 
 public class Test22 {
   public static void main(String[] args) throws Exception{
-    LogUtils.log("1");
+    LogUtils.out("1");
   }
 }
 `
@@ -26,50 +25,37 @@ const codeTabs = reactive<Code[]>([{ id: 1, code: templateCode }])
 
 const lang = ref("java")
 const options = ref([
-  {value: "java", label: "Java"},
-  {value: "golang", label: "golang"}
+  { value: "java", label: "Java" },
+  { value: "golang", label: "golang" }
 ])
 function addTabs() {
   codeTabs.push({ id: codeTabs.length + 1, code: templateCode })
+}
+
+function clear(obj: Code) {
+  obj.out = ""
 }
 
 function runCode(obj: Code) {
   obj.out = ""
   const source = new EventSource("http://localhost:3434/sse2/connect/" + obj.id)
 
-  /**
-   * 连接一旦建立，就会触发open事件
-   * 另一种写法：source.onopen = function (event) {}
-   */
-  source.addEventListener(
-    "open",
-    function () {
-      console.log("open....")
-    },
-    false
-  )
+  source.onopen = function () {
+    console.log("open....")
+  }
 
-  /**
-   * 客户端收到服务器发来的数据
-   * 另一种写法：source.onmessage = function (event) {}
-   */
-  source.addEventListener("message", function (e) {
-    console.log("message...." + e.data)
-    obj.out += e.data + "<br>"
-  })
+  source.onmessage = function (e) {
+    if (e.data == "exit") {
+      source.close()
+    } else {
+      obj.out += e.data + "<br>"
+    }
+  }
 
-  /**
-   * 如果发生通信错误（比如连接中断），就会触发error事件
-   * 或者：
-   * 另一种写法：source.onerror = function (event) {}
-   */
-  source.addEventListener(
-    "error",
-    function () {
-      console.log("error....")
-    },
-    false
-  )
+  source.onerror = function (e) {
+    console.log("error...." + e)
+  }
+
   connectAndRun(obj.id, obj.code)
 }
 </script>
@@ -80,7 +66,7 @@ function runCode(obj: Code) {
       <el-row>
         <el-col :span="18">
           <el-select v-model="lang" class="m-2 lang-select" placeholder="Select">
-            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"/>
+            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-col>
         <el-col :span="6">
@@ -88,9 +74,7 @@ function runCode(obj: Code) {
             运行<el-icon><CaretRight /></el-icon>
           </el-button>
         </el-col>
-
       </el-row>
-
 
       <v-ace-editor
         class="input"
@@ -106,26 +90,20 @@ function runCode(obj: Code) {
           tabSize: 4,
           showPrintMargin: false,
           highlightActiveLine: true
-      }"
+        }"
       />
-
     </el-col>
     <el-col :span="12">
-      <el-button type="info" plain :icon="Delete">
-        清空
-      </el-button>
+      <el-button type="info" plain :icon="Delete" @click="clear(it)"> 清空 </el-button>
       <el-button type="warning" plain style="float: right" @click="addTabs">
         <el-icon><Close /></el-icon>
       </el-button>
       <div class="output">
-        <span v-html="it.out"></span>
+        <span v-html="it.out" />
       </div>
-
     </el-col>
-
   </el-row>
-  <div>
-  </div>
+  <div />
 </template>
 
 <style lang="scss" scoped>
