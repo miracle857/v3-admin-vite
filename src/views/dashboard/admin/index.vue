@@ -54,6 +54,7 @@ function runCode(obj: Code) {
 
   source.onerror = function (e) {
     console.log("error...." + e)
+    source.close()
   }
 
   connectAndRun(obj.id, obj.code)

@@ -64,6 +64,7 @@ export default (configEnv: ConfigEnv): UserConfigExport => {
           comments: false
         }
       },
+      outDir: "web-tools",
       /** 打包后静态资源目录 */
       assetsDir: "static"
     },
