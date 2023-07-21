@@ -13,7 +13,7 @@ import asyncRouteSettings from "@/config/async-route"
 export const useUserStore = defineStore("user", () => {
   const token = ref<string>(getToken() || "")
   const roles = ref<string[]>([])
-  const username = ref<string>("")
+  const userName = ref<string>("")
 
   const permissionStore = usePermissionStore()
   const tagsViewStore = useTagsViewStore()
@@ -26,13 +26,13 @@ export const useUserStore = defineStore("user", () => {
   const login = (loginData: ILoginRequestData) => {
     return new Promise((resolve, reject) => {
       loginApi({
-        username: loginData.username,
+        userName: loginData.userName,
         password: loginData.password,
         code: loginData.code
       })
         .then((res) => {
-          setToken(res.data.token)
-          token.value = res.data.token
+          setToken(res.data + "")
+          token.value = res.data + ""
           resolve(true)
         })
         .catch((error) => {
@@ -42,24 +42,25 @@ export const useUserStore = defineStore("user", () => {
   }
   /** 获取用户详情 */
   const getInfo = () => {
-    return new Promise((resolve, reject) => {
-      getUserInfoApi()
-        .then((res) => {
-          const data = res.data
-          username.value = data.username
-          // 验证返回的 roles 是否是一个非空数组
-          if (data.roles && data.roles.length > 0) {
-            roles.value = data.roles
-          } else {
-            // 塞入一个没有任何作用的默认角色，不然路由守卫逻辑会无限循环
-            roles.value = asyncRouteSettings.defaultRoles
-          }
-          resolve(res)
-        })
-        .catch((error) => {
-          reject(error)
-        })
-    })
+    roles.value = ["admin", "editor"]
+    // return new Promise((resolve, reject) => {
+    //   getUserInfoApi()
+    //     .then((res) => {
+    //       const data = res.data
+    //       userName.value = data.userName
+    //       // 验证返回的 roles 是否是一个非空数组
+    //       if (data.roles && data.roles.length > 0) {
+    //         roles.value = data.roles
+    //       } else {
+    //         // 塞入一个没有任何作用的默认角色，不然路由守卫逻辑会无限循环
+    //         roles.value = asyncRouteSettings.defaultRoles
+    //       }
+    //       resolve(res)
+    //     })
+    //     .catch((error) => {
+    //       reject(error)
+    //     })
+    // })
   }
   /** 切换角色 */
   const changeRoles = async (role: string) => {
@@ -94,7 +95,7 @@ export const useUserStore = defineStore("user", () => {
     tagsViewStore.delAllCachedViews()
   }
 
-  return { token, roles, username, setRoles, login, getInfo, changeRoles, logout, resetToken }
+  return { token, roles, userName, setRoles, login, getInfo, changeRoles, logout, resetToken }
 })
 
 /** 在 setup 外使用 */

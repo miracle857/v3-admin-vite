@@ -28,7 +28,7 @@ export function test() {
 export function connectAndRun(id: number, code: string) {
   const data = { id: id, code: code }
   // sendEventStream("http://localhost:3434/sse2/connect/" + id)
-  axios.post("http://localhost:3434/sse2/run", data).then((res) => {
+  axios.post(import.meta.env.VITE_BASE_API + "sse2/run", data).then((res) => {
     console.log(res)
   })
 }
@@ -96,7 +96,7 @@ function createService() {
         return Promise.reject(new Error("非本系统的接口"))
       } else {
         switch (code) {
-          case 0:
+          case "0":
             // code === 0 代表没有错误
             return apiData
           default:

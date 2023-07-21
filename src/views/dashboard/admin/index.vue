@@ -38,24 +38,24 @@ function clear(obj: Code) {
 
 function runCode(obj: Code) {
   obj.out = ""
-  const source = new EventSource("http://localhost:3434/sse2/connect/" + obj.id)
-
-  source.onopen = function () {
-    console.log("open....")
-  }
-
-  source.onmessage = function (e) {
-    if (e.data == "exit") {
-      source.close()
-    } else {
-      obj.out += e.data + "<br>"
-    }
-  }
-
-  source.onerror = function (e) {
-    console.log("error...." + e)
-    source.close()
-  }
+  // const source = new EventSource("http://localhost:3434/sse2/connect/" + obj.id)
+  //
+  // source.onopen = function () {
+  //   console.log("open....")
+  // }
+  //
+  // source.onmessage = function (e) {
+  //   if (e.data == "exit") {
+  //     source.close()
+  //   } else {
+  //     obj.out += e.data + "<br>"
+  //   }
+  // }
+  //
+  // source.onerror = function (e) {
+  //   console.log("error...." + e)
+  //   source.close()
+  // }
 
   connectAndRun(obj.id, obj.code)
 }
