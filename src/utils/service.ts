@@ -3,38 +3,19 @@ import { useUserStoreHook } from "@/store/modules/user"
 import { ElMessage } from "element-plus"
 import { get } from "lodash-es"
 import { getToken } from "./cache/cookies"
+import { Code } from "@/api/dashboard"
 
-export function test() {
-  const url = "http://localhost:3434/sse2/connect/T"
-  axios
-    .get(url, { responseType: "text", headers: { Accept: "text/event-stream" } })
-    .then(() => {
-      const eventSource = new EventSource(url)
-      eventSource.onmessage = (event) => {
-        console.log(event.data)
-        console.log("Received event: " + JSON.stringify(event))
-      }
-
-      eventSource.onerror = (error) => {
-        console.error("EventSource error:", error)
-        eventSource.close()
-      }
-    })
-    .catch((error) => {
-      console.error("Error fetching SSE stream:", error)
-    })
-}
-
-export function connectAndRun(id: number, code: string) {
-  const data = { id: id, code: code }
-  // sendEventStream("http://localhost:3434/sse2/connect/" + id)
-  axios.post(import.meta.env.VITE_BASE_API + "sse2/run", data).then((res) => {
+export function connectAndRun(obj: Code) {
+  const data = { id: obj.id, code: obj.code }
+  if (!obj.connect) {
+    sendEventStream(import.meta.env.VITE_BASE_API + "sse/connect/" + obj.id, obj)
+  }
+  axios.post(import.meta.env.VITE_BASE_API + "tools/run", data).then((res) => {
     console.log(res)
   })
 }
 
-export function sendEventStream(url: string) {
-  // const url = "http://localhost:3434/sse2/connect/T"
+export function sendEventStream(url: string, obj: Code) {
   // 建立连接
   const source = new EventSource(url)
 
@@ -46,6 +27,7 @@ export function sendEventStream(url: string) {
     "open",
     function () {
       console.log("open....")
+      obj.connect = true
     },
     false
   )
@@ -56,6 +38,7 @@ export function sendEventStream(url: string) {
    */
   source.addEventListener("message", function (e) {
     console.log("message...." + e.data)
+    obj.out += e.data + "<br>"
   })
 
   /**
@@ -68,6 +51,7 @@ export function sendEventStream(url: string) {
     function () {
       console.log("error....")
       source.close()
+      obj.connect = false
     },
     false
   )

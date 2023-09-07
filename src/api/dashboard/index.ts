@@ -1,5 +1,12 @@
 import { request } from "@/utils/service"
 
+export interface Code {
+  id: number
+  code: string
+  out?: string
+  connect: boolean
+}
+
 /** 获取登录验证码 */
 // export function runCode() {
 //   return request({

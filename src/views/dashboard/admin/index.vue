@@ -4,12 +4,8 @@ import { reactive, ref } from "vue"
 import { VAceEditor } from "vue3-ace-editor"
 import { Delete } from "@element-plus/icons-vue"
 import { connectAndRun } from "@/utils/service"
+import {Code} from "@/api/dashboard";
 
-interface Code {
-  id: number
-  code: string
-  out?: string
-}
 
 // const templateCode = "public static void main(String[] args){\n\n}"
 const templateCode = `import com.maoxinhuan.webtools.utils.LogUtils;
@@ -21,15 +17,15 @@ public class Test22 {
 }
 `
 
-const codeTabs = reactive<Code[]>([{ id: 1, code: templateCode }])
+const codeTabs = reactive<Code[]>([{ id: 1, code: templateCode, connect: false }])
 
 const lang = ref("java")
 const options = ref([
-  { value: "java", label: "Java" },
-  { value: "golang", label: "golang" }
+  { value: "java", label: "Java" }
+  // { value: "golang", label: "golang" }
 ])
 function addTabs() {
-  codeTabs.push({ id: codeTabs.length + 1, code: templateCode })
+  codeTabs.push({ id: codeTabs.length + 1, code: templateCode, connect: false })
 }
 
 function clear(obj: Code) {
@@ -38,26 +34,7 @@ function clear(obj: Code) {
 
 function runCode(obj: Code) {
   obj.out = ""
-  // const source = new EventSource("http://localhost:3434/sse2/connect/" + obj.id)
-  //
-  // source.onopen = function () {
-  //   console.log("open....")
-  // }
-  //
-  // source.onmessage = function (e) {
-  //   if (e.data == "exit") {
-  //     source.close()
-  //   } else {
-  //     obj.out += e.data + "<br>"
-  //   }
-  // }
-  //
-  // source.onerror = function (e) {
-  //   console.log("error...." + e)
-  //   source.close()
-  // }
-
-  connectAndRun(obj.id, obj.code)
+  connectAndRun(obj)
 }
 </script>
 
