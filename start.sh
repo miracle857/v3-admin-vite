@@ -4,5 +4,6 @@ source ~/.bashrc
 unset http_proxy
 unset https_proxy
 git pull
-pnpm build:prod
+## pnpm build:prod
 
+## nohup pnpm dev -m production >all.log 2>&1 &
