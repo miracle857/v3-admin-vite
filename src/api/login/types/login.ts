@@ -1,6 +1,6 @@
 export interface ILoginRequestData {
   /** admin 或 editor */
-  userName: "zhang" | "editor"
+  userName: string
   /** 密码 */
   password: string
   /** 验证码 */

@@ -17,7 +17,7 @@ const loading = ref(false)
 const codeUrl = ref("")
 /** 登录表单数据 */
 const loginForm: ILoginRequestData = reactive({
-  userName: "zhang",
+  userName: "zhang1",
   password: "123456",
   code: ""
 })
